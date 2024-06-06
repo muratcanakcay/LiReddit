@@ -1,7 +1,14 @@
-echo "# Youtube---React-Redis-GraphQL" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/muratcanakcay/Youtube---React-Redis-GraphQL.git
-git push -u origin main
+.DS_*
+*.log
+logs
+**/*.backup.*
+**/*.back.*
+
+node_modules
+bower_components
+
+*.sublime*
+
+psd
+thumb
+sketch
