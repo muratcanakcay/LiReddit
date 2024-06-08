@@ -48,17 +48,17 @@ export class UserResolver {
       }
     }
 
-    const isUserExists = await em.findOne(User, { username: options.username })
-    if (isUserExists) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message: "That username is already taken"
-          }
-        ]
-      }
-    }
+    // const isUserExists = await em.findOne(User, { username: options.username })
+    // if (isUserExists) {
+    //   return {
+    //     errors: [
+    //       {
+    //         field: "username",
+    //         message: "That username is already taken"
+    //       }
+    //     ]
+    //   }
+    // }
 
     if (options.password.length <= 3) {
       return {
@@ -73,7 +73,19 @@ export class UserResolver {
 
     const hashedPassword = await argon2.hash(options.password)
     const user = em.create(User, { username: options.username, password: hashedPassword })
-    await em.persistAndFlush(user)
+    try {
+      await em.persistAndFlush(user)
+    } catch (err) {
+      // duplicate username error
+      if (err.code === "23505") { // || err.detail.includes("already exists"))
+        return {
+          errors: [{
+            field: "username",
+            message: "That username is already taken"
+          }]
+        }
+      }
+    }
 
     return { user }
   }
