@@ -2,8 +2,6 @@ import { User } from "../entities/User";
 import { MyContext } from "src/types";
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import argon2 from "argon2"
-import { NullCacheAdapter } from "@mikro-orm/core";
-
 
 @InputType()  // InputType are used for arguments
 class UsernamePasswordInput {
