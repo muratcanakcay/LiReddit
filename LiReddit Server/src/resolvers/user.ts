@@ -1,7 +1,8 @@
 import { User } from "../entities/User";
 import { MyContext } from "src/types";
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Resolver } from "type-graphql";
+import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import argon2 from "argon2"
+import { NullCacheAdapter } from "@mikro-orm/core";
 
 
 @InputType()  // InputType are used for arguments
@@ -31,10 +32,23 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(
+    @Ctx() { em, req } : MyContext
+  ) {
+    // you are not logged in
+    if (!req.session.userId) {
+      return null
+    }
+    
+    const user = await em.findOne(User, { id: req.session.userId })
+    return user
+  }    
+  
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernamePasswordInput, //  let typescript infer type UsernamePasswordInput
-    @Ctx() { em } : MyContext
+    @Ctx() { em, req } : MyContext
   ) : Promise<UserResponse> {
     
     if (options.username.length <= 2) {
@@ -46,19 +60,7 @@ export class UserResolver {
           }
         ]
       }
-    }
-
-    // const isUserExists = await em.findOne(User, { username: options.username })
-    // if (isUserExists) {
-    //   return {
-    //     errors: [
-    //       {
-    //         field: "username",
-    //         message: "That username is already taken"
-    //       }
-    //     ]
-    //   }
-    // }
+    }    
 
     if (options.password.length <= 3) {
       return {
@@ -87,13 +89,15 @@ export class UserResolver {
       }
     }
 
+    req.session.userId = user.id // logs in the user (by sending cookie to browser)
+
     return { user }
   }
 
   @Mutation(() => UserResponse)
   async login(
     @Arg('options') options: UsernamePasswordInput, //  let typescript infer type UsernamePasswordInput
-    @Ctx() { em } : MyContext
+    @Ctx() { em, req } : MyContext
   ) : Promise<UserResponse> {
     const user = await em.findOne(User, {username: options.username})
     if (!user) {
@@ -118,6 +122,8 @@ export class UserResolver {
         ]
       }
     }
+
+    req.session.userId = user.id // created new type for req in types.ts to make this work
 
     return { user }
   }
