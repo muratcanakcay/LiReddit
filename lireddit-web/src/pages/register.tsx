@@ -3,41 +3,29 @@ import { Form, Formik } from "formik";
 import { Button, Box } from "@chakra-ui/react";
 import { Wrapper } from "../components/Wrapper";
 import { InputField } from "../components/InputField";
-import { useMutation } from "urql";
+import { useRegisterMutation } from "../generated/graphql";
 
 interface registerProps {}
 
 const Register: React.FC<registerProps> = ({}) => {
-  // this is the mutation copied from GraphQL PlayGround. We pass it to useMutation and use the returned function in handlesubmit
-  const REGISTER_MUT = `
-  mutation Register ($username: String!, $password: String!){
-    register(options: { username: $username, password: $password  }) {
-      errors {
-        field
-        message
-      }
-      user {
-        id
-        username
-        createdAt
-        updatedAt
-      }
-    }
-  }
-  `;
-
-  const [, /*first object can be ommitted for now*/ register] =
-    useMutation(REGISTER_MUT);
+  const [, register] = useRegisterMutation();
 
   return (
     <Wrapper variant="small">
-      <Formik
+      <Formik // initalValues, onsubmit, setErros provded by Formik, values is inferred from initialValues
         initialValues={{ username: "", password: "" }}
-        onSubmit={(values) => {
-          return register(values);
+        onSubmit={async (values, { setErrors }) => {
+          const response = await register(values);
+          if (response.data?.register.errors) {
+            setErrors({
+              username: "hey error",
+            });
+          }
         }}
       >
-        {({ isSubmitting }) => (
+        {(
+          { isSubmitting } // isSubmitting is provided by Formik
+        ) => (
           <Form>
             <InputField
               name="username"
