@@ -614,6 +614,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cors@npm:2.8.7":
+  version: 2.8.7
+  resolution: "@types/cors@npm:2.8.7"
+  dependencies:
+    "@types/express": "npm:*"
+  checksum: 10c0/d5b7d1ae9e9cabe15ef02a0f8b19fad2780e104766c8c8bb38a7c2eda1fae5569fa2ffef920febd4cde2d5ba992271198fe71a717f5e5c633fc8878fce3ca98a
+  languageName: node
+  linkType: hard
+
 "@types/cors@npm:^2.8.4":
   version: 2.8.17
   resolution: "@types/cors@npm:2.8.17"
@@ -1863,7 +1872,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cors@npm:^2.8.4":
+"cors@npm:2.8.5, cors@npm:^2.8.4":
   version: 2.8.5
   resolution: "cors@npm:2.8.5"
   dependencies:
@@ -3671,6 +3680,7 @@ __metadata:
     "@mikro-orm/migrations": "npm:4.5.10"
     "@mikro-orm/postgresql": "npm:4.5"
     "@types/connect-redis": "npm:0.0.13"
+    "@types/cors": "npm:2.8.7"
     "@types/express": "npm:^4"
     "@types/express-session": "npm:^1"
     "@types/node": "npm:^20.14.2"
@@ -3679,6 +3689,7 @@ __metadata:
     apollo-server-express: "npm:2.16.1"
     argon2: "npm:^0.40.3"
     connect-redis: "npm:5.0.0"
+    cors: "npm:2.8.5"
     express: "npm:^4.19.2"
     express-session: "npm:1.17.1"
     graphql: "npm:15.3.0"
