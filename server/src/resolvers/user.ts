@@ -12,6 +12,7 @@ import {
 } from "type-graphql";
 import argon2 from "argon2";
 import { EntityManager } from "@mikro-orm/postgresql";
+import { COOKIE_NAME } from "../constants";
 
 @InputType() // InputType are used for arguments
 class UsernamePasswordInput {
@@ -155,5 +156,23 @@ export class UserResolver {
     req.session.userId = user.id; // created new type for req in types.ts to make this work
 
     return { user };
+  }
+
+  @Mutation(() => Boolean)
+  async logout(@Ctx() { req, res }: MyContext): Promise<Boolean> {
+    // clear the user's cookie
+    res.clearCookie(COOKIE_NAME);
+
+    // clear the redis record
+    return new Promise((resolve) =>
+      req.session.destroy((err) => {
+        if (err) {
+          console.log(err);
+          resolve(false);
+          return;
+        }
+        resolve(true);
+      })
+    );
   }
 }

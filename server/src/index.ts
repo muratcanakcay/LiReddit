@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { MikroORM } from "@mikro-orm/core";
-import { __prod__ } from "./constants";
+import { COOKIE_NAME, __prod__ } from "./constants";
 // import { Post } from "./entities/Post"
 import microConfig from "./mikro-orm.config";
 import express from "express";
@@ -35,7 +35,7 @@ const main = async () => {
   // Initialize session storage before Apollo since it will be used from inside Apollo.
   app.use(
     session({
-      name: "qid", // cookie name
+      name: COOKIE_NAME,
       store: new RedisStore({
         client: redisClient,
         disableTTL: true, // keep session alive forever
