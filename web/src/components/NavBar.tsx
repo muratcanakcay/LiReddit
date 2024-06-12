@@ -14,8 +14,6 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
     pause: isServer(), // this will prevent the query from running on the server (there's no cookie on the server to look for)
   });
 
-  console.log(data);
-
   let body = null;
 
   //data is loading
