@@ -4,9 +4,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { User } from "./User";
 
 @ObjectType() // graphQL
 @Entity() // typeorm
@@ -16,6 +18,25 @@ export class Post extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Field()
+  @Column()
+  title!: string;
+
+  @Field()
+  @Column()
+  text!: string;
+
+  @Field()
+  @Column({ type: "int", default: 0 })
+  points!: number;
+
+  @Field()
+  @Column()
+  cratorId: number;
+
+  @ManyToOne(() => User, (user) => user.posts)
+  creator: User;
+
   @Field(() => String) // explicitly set type for GraphQL
   @CreateDateColumn()
   createdAt: Date;
@@ -23,8 +44,4 @@ export class Post extends BaseEntity {
   @Field(() => String)
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @Field()
-  @Column()
-  title!: string;
 }

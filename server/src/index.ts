@@ -16,7 +16,7 @@ import { UserResolver } from "./resolvers/user";
 import { MyContext } from "./types";
 
 const main = async () => {
-  const conn = createConnection({
+  const conn = await createConnection({
     type: "postgres",
     database: "lireddit2",
     username: "postgres",
