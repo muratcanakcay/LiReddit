@@ -4,7 +4,6 @@ import {
   Arg,
   Ctx,
   Field,
-  InputType,
   Mutation,
   ObjectType,
   Query,
@@ -13,14 +12,8 @@ import {
 import argon2 from "argon2";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { COOKIE_NAME } from "../constants";
-
-@InputType() // InputType are used for arguments
-class UsernamePasswordInput {
-  @Field()
-  username: string;
-  @Field(() => String) // can set type explicitly, or let typescript infer it
-  password: string;
-}
+import { UsernamePasswordInput } from "./UsernamePasswordInput";
+import { validateRegister } from "src/utils/validateRegister";
 
 @ObjectType()
 class FieldError {
@@ -41,6 +34,12 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Mutation(() => Boolean)
+  async forgotPassword(@Arg("email") email: string, @Ctx() { em }: MyContext) {
+    // const user = await em.findOne(User, { email })
+    return true;
+  }
+
   @Query(() => User, { nullable: true })
   async me(@Ctx() { em, req }: MyContext) {
     // you are not logged in
@@ -57,36 +56,12 @@ export class UserResolver {
     @Arg("options") options: UsernamePasswordInput, //  let typescript infer type UsernamePasswordInput
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    if (options.username.length <= 2) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message: "Length must be greater than 2",
-          },
-        ],
-      };
-    }
-
-    if (options.password.length <= 3) {
-      return {
-        errors: [
-          {
-            field: "password",
-            message: "Length must be greater than 3",
-          },
-        ],
-      };
+    const response = validateRegister(options);
+    if (response) {
+      return response;
     }
 
     const hashedPassword = await argon2.hash(options.password);
-    // commenting this MikroOrm part out since we've switched to using QueryBuilder instead, below
-    // const user = em.create(User, {
-    //   username: options.username,
-    //   password: hashedPassword,
-    // });
-    // try {
-    //   await em.persistAndFlush(user);
 
     let user;
     try {
@@ -96,6 +71,7 @@ export class UserResolver {
         .insert({
           username: options.username,
           password: hashedPassword,
+          email: options.email,
           created_at: new Date(), // mikroORM adds the underscores in DB so we must write it like this with Knex
           updated_at: new Date(),
         })
@@ -123,10 +99,16 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg("options") options: UsernamePasswordInput, //  let typescript infer type UsernamePasswordInput
+    @Arg("usernameOrEmail") usernameOrEmail: string,
+    @Arg("password") password: string,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(User, { username: options.username });
+    const user = await em.findOne(
+      User,
+      usernameOrEmail.includes("@")
+        ? { email: usernameOrEmail }
+        : { username: usernameOrEmail }
+    );
     if (!user) {
       return {
         errors: [
@@ -138,10 +120,7 @@ export class UserResolver {
       };
     }
 
-    const isPasswordValid = await argon2.verify(
-      user.password,
-      options.password
-    );
+    const isPasswordValid = await argon2.verify(user.password, password);
     if (!isPasswordValid) {
       return {
         errors: [
