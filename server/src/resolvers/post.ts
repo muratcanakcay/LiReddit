@@ -1,13 +1,13 @@
 import { Post } from "../entities/Post";
 import { MyContext } from "src/types";
 import { Arg, Ctx, Int, Mutation, Query, Resolver } from "type-graphql";
-import { sleep } from "../utils/sleep";
+// import { sleep } from "../utils/sleep";
 
 @Resolver()
 export class PostResolver {
   @Query(() => [Post])
   async posts(@Ctx() { em }: MyContext): Promise<Post[]> {
-    await sleep(3000); // simulate delay to test csr vs ssr load times
+    //await sleep(3000); // simulate delay to test csr vs ssr load times
     return em.find(Post, {});
   }
 

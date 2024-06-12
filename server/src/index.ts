@@ -14,8 +14,14 @@ import session from "express-session";
 import redis from "redis";
 import { MyContext } from "./types";
 import cors from "cors";
+import { sendEmail } from "./utils/sendEmail";
 
 const main = async () => {
+  sendEmail(
+    "mca@bokkafadelibok.com",
+    "Change Password!",
+    "Change your password!"
+  );
   const orm = await MikroORM.init(microConfig);
   await orm.getMigrator().up(); // run migration
 
