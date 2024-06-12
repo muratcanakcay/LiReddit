@@ -55,7 +55,7 @@ export class UserResolver {
       "ex",
       1000 * 60 * 60 * 24
     );
-    const resetLink = `<a href="http://localhost:3000/change-password/${token}">Reset password</a>`;
+    const resetLink = `<a href="http://localhost:3000/reset-password/${token}">Reset password</a>`;
 
     sendEmail(email, "Reset Password", resetLink);
     return true;
