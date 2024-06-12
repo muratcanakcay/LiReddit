@@ -89,7 +89,7 @@ export class UserResolver {
   async forgotPassword(
     @Arg("email") email: string,
     @Ctx() { em, redis }: MyContext
-  ) {
+  ): Promise<Boolean> {
     const user = await em.findOne(User, { email });
     if (!user) {
       // the email is not in the db
