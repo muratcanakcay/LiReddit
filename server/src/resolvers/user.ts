@@ -11,10 +11,11 @@ import {
 } from "type-graphql";
 import argon2 from "argon2";
 import { EntityManager } from "@mikro-orm/postgresql";
-import { COOKIE_NAME } from "../constants";
+import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from "../constants";
 import { UsernamePasswordInput } from "./UsernamePasswordInput";
 import { validateRegister } from "../utils/validateRegister";
-
+import { sendEmail } from "../utils/sendEmail";
+import { v4 } from "uuid";
 @ObjectType()
 class FieldError {
   @Field()
@@ -35,8 +36,28 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Mutation(() => Boolean)
-  async forgotPassword(@Arg("email") email: string, @Ctx() { em }: MyContext) {
-    // const user = await em.findOne(User, { email })
+  async forgotPassword(
+    @Arg("email") email: string,
+    @Ctx() { em, redis }: MyContext
+  ) {
+    const user = await em.findOne(User, { email });
+    if (!user) {
+      // the email is not in the db
+      return true; //  don't let the person know that the email is not in the db
+    }
+
+    const token = v4(); // token for resetting pw
+
+    // save token to redis with userId, expires in 1 day
+    await redis.set(
+      FORGOT_PASSWORD_PREFIX + token,
+      user.id,
+      "ex",
+      1000 * 60 * 60 * 24
+    );
+    const resetLink = `<a href="http://localhost:3000/change-password/${token}">Reset password</a>`;
+
+    sendEmail(email, "Reset Password", resetLink);
     return true;
   }
 

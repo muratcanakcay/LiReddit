@@ -11,10 +11,9 @@ import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
 import connectRedis from "connect-redis";
 import session from "express-session";
-import redis from "redis";
+import Redis from "ioredis";
 import { MyContext } from "./types";
 import cors from "cors";
-import { User } from "./entities/User";
 
 const main = async () => {
   const orm = await MikroORM.init(microConfig);
@@ -23,7 +22,7 @@ const main = async () => {
   const app = express();
 
   const RedisStore = connectRedis(session);
-  const redisClient = redis.createClient();
+  const redis = new Redis();
 
   // define CORS to avoid CORS errors
   app.use(
@@ -38,7 +37,7 @@ const main = async () => {
     session({
       name: COOKIE_NAME,
       store: new RedisStore({
-        client: redisClient,
+        client: redis,
         disableTTL: true, // keep session alive forever
         disableTouch: true, // disable TTL reset at every touch
       }),
@@ -59,7 +58,7 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }: MyContext) => ({ em: orm.em, req, res }), // context is shared with all resolvers
+    context: ({ req, res }: MyContext) => ({ em: orm.em, req, res, redis }), // context is shared with all resolvers
   });
 
   apolloServer.applyMiddleware({

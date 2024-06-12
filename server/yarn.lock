@@ -719,6 +719,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/ioredis@npm:4.17.3":
+  version: 4.17.3
+  resolution: "@types/ioredis@npm:4.17.3"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/b557488eaefc890a18d5ca7f02ad44853c6e88e39fc45d2a7a319628e4f832952a306ed2cf5c636c274d64eb0ea92902247b0eb1cf29323d3dbf2350420cae77
+  languageName: node
+  linkType: hard
+
 "@types/json5@npm:^0.0.29":
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
@@ -854,15 +863,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/redis@npm:2.8.25":
-  version: 2.8.25
-  resolution: "@types/redis@npm:2.8.25"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/d1f6ab1dcc676f965524b795c40c4cf83a19f1393899dfbd7aa8b2849d8e2e6b63c5d9d7c9ff8bb6a9366bd6cc3814151a365998adae7c8429d5c4f39728260a
-  languageName: node
-  linkType: hard
-
 "@types/semver@npm:^7.3.3":
   version: 7.5.8
   resolution: "@types/semver@npm:7.5.8"
@@ -910,6 +910,13 @@ __metadata:
     "@types/mongodb": "npm:*"
     "@types/sequelize": "npm:*"
   checksum: 10c0/6f4fe37a4d86473f7e0c3d5b01d23b394d1e898830a6762f9e45bccecb2dab0749a484fe10cd183a21dda334a13299ca318ff1d738ce3c02fe24202d7f49175c
+  languageName: node
+  linkType: hard
+
+"@types/uuid@npm:8.3.1":
+  version: 8.3.1
+  resolution: "@types/uuid@npm:8.3.1"
+  checksum: 10c0/3f7adf2bf15a805044e2b30e40247008a0b3b2d0795ad0d2de57c91ff55c69c340e1e4d9fc6959e330f1a8844f584a8f0b9c73b813986430b8e7ac2b38c87d81
   languageName: node
   linkType: hard
 
@@ -1748,7 +1755,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cluster-key-slot@npm:1.1.2":
+"cluster-key-slot@npm:1.1.2, cluster-key-slot@npm:^1.1.0":
   version: 1.1.2
   resolution: "cluster-key-slot@npm:1.1.2"
   checksum: 10c0/d7d39ca28a8786e9e801eeb8c770e3c3236a566625d7299a47bb71113fb2298ce1039596acb82590e598c52dbc9b1f088c8f587803e697cb58e1867a95ff94d3
@@ -1958,7 +1965,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.3.4":
+"debug@npm:4, debug@npm:^4.1.1, debug@npm:^4.3.4":
   version: 4.3.5
   resolution: "debug@npm:4.3.5"
   dependencies:
@@ -2046,7 +2053,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"denque@npm:^1.4.1":
+"denque@npm:^1.1.0":
   version: 1.5.1
   resolution: "denque@npm:1.5.1"
   checksum: 10c0/9e6fc1a63e1c9ded38325290302fef40e5ad28471ad8c66d68eaea623ef847bd25fc75a7c3f47396206dc967922615999066470a364e1786f2758d61337872b7
@@ -3194,6 +3201,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ioredis@npm:4.17.3":
+  version: 4.17.3
+  resolution: "ioredis@npm:4.17.3"
+  dependencies:
+    cluster-key-slot: "npm:^1.1.0"
+    debug: "npm:^4.1.1"
+    denque: "npm:^1.1.0"
+    lodash.defaults: "npm:^4.2.0"
+    lodash.flatten: "npm:^4.4.0"
+    redis-commands: "npm:1.5.0"
+    redis-errors: "npm:^1.2.0"
+    redis-parser: "npm:^3.0.0"
+    standard-as-callback: "npm:^2.0.1"
+  checksum: 10c0/1b56a144b8f40f848a13015dfd1a0d98dbb39d32917d6b15efab961f562f825efe97867bbff7732cb7fe94693d022bbd527b7b1b8766b622eae50590a68fe417
+  languageName: node
+  linkType: hard
+
 "ip-address@npm:^9.0.5":
   version: 9.0.5
   resolution: "ip-address@npm:9.0.5"
@@ -3692,10 +3716,11 @@ __metadata:
     "@types/cors": "npm:2.8.7"
     "@types/express": "npm:^4"
     "@types/express-session": "npm:^1"
+    "@types/ioredis": "npm:4.17.3"
     "@types/node": "npm:^20.14.2"
     "@types/nodemailer": "npm:^6"
     "@types/pg": "npm:^8"
-    "@types/redis": "npm:2.8.25"
+    "@types/uuid": "npm:8.3.1"
     apollo-server-express: "npm:2.16.1"
     argon2: "npm:^0.40.3"
     connect-redis: "npm:5.0.0"
@@ -3703,14 +3728,15 @@ __metadata:
     express: "npm:^4.19.2"
     express-session: "npm:1.17.1"
     graphql: "npm:15.3.0"
+    ioredis: "npm:4.17.3"
     nodemailer: "npm:6.4.11"
     nodemon: "npm:^3.1.3"
     pg: "npm:^8.12.0"
-    redis: "npm:3.0.2"
     reflect-metadata: "npm:0.1.13"
     ts-node: "npm:^10.9.2"
     type-graphql: "npm:1.0.0"
     typescript: "npm:^5.4.5"
+    uuid: "npm:8.3.0"
   languageName: unknown
   linkType: soft
 
@@ -3720,6 +3746,20 @@ __metadata:
   dependencies:
     p-locate: "npm:^4.1.0"
   checksum: 10c0/33a1c5247e87e022f9713e6213a744557a3e9ec32c5d0b5efb10aa3a38177615bf90221a5592674857039c1a0fd2063b82f285702d37b792d973e9e72ace6c59
+  languageName: node
+  linkType: hard
+
+"lodash.defaults@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "lodash.defaults@npm:4.2.0"
+  checksum: 10c0/d5b77aeb702caa69b17be1358faece33a84497bcca814897383c58b28a2f8dfc381b1d9edbec239f8b425126a3bbe4916223da2a576bb0411c2cefd67df80707
+  languageName: node
+  linkType: hard
+
+"lodash.flatten@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "lodash.flatten@npm:4.4.0"
+  checksum: 10c0/97e8f0d6b61fe4723c02ad0c6e67e51784c4a2c48f56ef283483e556ad01594cf9cec9c773e177bbbdbdb5d19e99b09d2487cb6b6e5dc405c2693e93b125bd3a
   languageName: node
   linkType: hard
 
@@ -4847,10 +4887,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis-commands@npm:^1.5.0":
-  version: 1.7.0
-  resolution: "redis-commands@npm:1.7.0"
-  checksum: 10c0/c78b46d8d6e811f422961878538c57048a451ab56760d3f1657a7c8f29aaae42cc23890f75655556a59ec67611022e18cb443d2976e6c55036934bfe783aa60e
+"redis-commands@npm:1.5.0":
+  version: 1.5.0
+  resolution: "redis-commands@npm:1.5.0"
+  checksum: 10c0/5db1a9a61991762cfe0ae4259112a3ad38f4dc472876df0c3fc0bbed2622251439e3b836a1ea0e3f3c22264facb3ee43bae47f01e40b4dd0df723806659a02bc
   languageName: node
   linkType: hard
 
@@ -4881,18 +4921,6 @@ __metadata:
     "@redis/search": "npm:1.1.6"
     "@redis/time-series": "npm:1.0.5"
   checksum: 10c0/b031399a558fd6f06bf12bfe7722b67901a5cb46128ef3fb7634fbd1d3ce7dfc801ddab2500960ea7cd1c8f4a4cdda93657a4aa0eb8b705b5ed63154834ed91e
-  languageName: node
-  linkType: hard
-
-"redis@npm:3.0.2":
-  version: 3.0.2
-  resolution: "redis@npm:3.0.2"
-  dependencies:
-    denque: "npm:^1.4.1"
-    redis-commands: "npm:^1.5.0"
-    redis-errors: "npm:^1.2.0"
-    redis-parser: "npm:^3.0.0"
-  checksum: 10c0/b35c032b7f660b5b86bf60a881fc725470fb596947d7651ec049b234b8681d871b4a4f66fae6afa5ef22657b1d3f2a18bad331f30b8b168ee71cf1b947ca5168
   languageName: node
   linkType: hard
 
@@ -5379,6 +5407,13 @@ __metadata:
   dependencies:
     minipass: "npm:^7.0.3"
   checksum: 10c0/e5a1e23a4057a86a97971465418f22ea89bd439ac36ade88812dd920e4e61873e8abd6a9b72a03a67ef50faa00a2daf1ab745c5a15b46d03e0544a0296354227
+  languageName: node
+  linkType: hard
+
+"standard-as-callback@npm:^2.0.1":
+  version: 2.1.0
+  resolution: "standard-as-callback@npm:2.1.0"
+  checksum: 10c0/012677236e3d3fdc5689d29e64ea8a599331c4babe86956bf92fc5e127d53f85411c5536ee0079c52c43beb0026b5ce7aa1d834dd35dd026e82a15d1bcaead1f
   languageName: node
   linkType: hard
 
@@ -5967,6 +6002,15 @@ __metadata:
   version: 1.0.1
   resolution: "utils-merge@npm:1.0.1"
   checksum: 10c0/02ba649de1b7ca8854bfe20a82f1dfbdda3fb57a22ab4a8972a63a34553cf7aa51bc9081cf7e001b035b88186d23689d69e71b510e610a09a4c66f68aa95b672
+  languageName: node
+  linkType: hard
+
+"uuid@npm:8.3.0":
+  version: 8.3.0
+  resolution: "uuid@npm:8.3.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 10c0/11a6ea1b033a87011f81acb93ef875c27d714a79534e62b8e66c9515dbfe96f4cf9035c37641a8ad3f7b7cf6ed8470625f67e9dcf5457f9262bfe94bffcffb8e
   languageName: node
   linkType: hard
 
