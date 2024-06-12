@@ -35,6 +35,55 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Mutation(() => UserResponse)
+  async changePassword(
+    @Arg("token") token: string,
+    @Arg("newPassword") newPassword: string,
+    @Ctx() { em, redis, req }: MyContext
+  ): Promise<UserResponse> {
+    if (newPassword.length <= 2) {
+      return {
+        errors: [
+          {
+            field: "newPassword",
+            message: "Length must be greater than 3",
+          },
+        ],
+      };
+    }
+
+    const userId = await redis.get(FORGOT_PASSWORD_PREFIX + token); // retrieve value for token from redis
+    if (!userId) {
+      return {
+        errors: [
+          {
+            field: "token",
+            message: "Token expired",
+          },
+        ],
+      };
+    }
+
+    const user = await em.findOne(User, { id: parseInt(userId) });
+
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: "token",
+            message: "User no longer exists",
+          },
+        ],
+      };
+    }
+
+    user.password = await argon2.hash(newPassword); // hash and set the pw in user
+    await em.persistAndFlush(user); // change pw in db
+    req.session.userId = user.id; // log the user in
+
+    return { user };
+  }
+
   @Mutation(() => Boolean)
   async forgotPassword(
     @Arg("email") email: string,
@@ -48,14 +97,14 @@ export class UserResolver {
 
     const token = v4(); // token for resetting pw
 
-    // save token to redis with userId, expires in 1 day
+    // save token to redis with value userId, expires in 1 day
     await redis.set(
       FORGOT_PASSWORD_PREFIX + token,
       user.id,
       "ex",
       1000 * 60 * 60 * 24
     );
-    const resetLink = `<a href="http://localhost:3000/reset-password/${token}">Reset password</a>`;
+    const resetLink = `<a href="http://localhost:3000/change-password/${token}">Reset password</a>`;
 
     sendEmail(email, "Reset Password", resetLink);
     return true;
@@ -153,7 +202,7 @@ export class UserResolver {
       };
     }
 
-    req.session.userId = user.id; // created new type for req in types.ts to make this work
+    req.session.userId = user.id; // created new type for req in types.ts to make this work, so the session can store the userId
 
     return { user };
   }
