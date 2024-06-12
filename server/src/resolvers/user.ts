@@ -13,7 +13,7 @@ import argon2 from "argon2";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { COOKIE_NAME } from "../constants";
 import { UsernamePasswordInput } from "./UsernamePasswordInput";
-import { validateRegister } from "src/utils/validateRegister";
+import { validateRegister } from "../utils/validateRegister";
 
 @ObjectType()
 class FieldError {
@@ -56,9 +56,9 @@ export class UserResolver {
     @Arg("options") options: UsernamePasswordInput, //  let typescript infer type UsernamePasswordInput
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const response = validateRegister(options);
-    if (response) {
-      return response;
+    const errors = validateRegister(options);
+    if (errors) {
+      return { errors };
     }
 
     const hashedPassword = await argon2.hash(options.password);
