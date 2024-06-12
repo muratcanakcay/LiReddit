@@ -11,7 +11,7 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
-import { isAuth } from "src/middleware/isAuth";
+import { isAuth } from "../middleware/isAuth";
 // import { sleep } from "../utils/sleep";
 
 @InputType()

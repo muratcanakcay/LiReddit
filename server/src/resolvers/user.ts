@@ -140,25 +140,25 @@ export class UserResolver {
 
     let user;
     try {
-      user = await User.create({
-        username: options.username,
-        password: hashedPassword,
-        email: options.email,
-      }).save();
+      /* Same opeartion Using .create - but may return undefined */
+      // user = await User.create({
+      //   username: options.username,
+      //   password: hashedPassword,
+      //   email: options.email,
+      // }).save();
 
-      /* Same opeartion Using QueryBuilder */
-      // const result = await getConnection()
-      //   .createQueryBuilder()
-      //   .insert()
-      //   .into(User)
-      //   .values({
-      //     username: options.username,
-      //     password: hashedPassword,
-      //     email: options.email,
-      //   })
-      //   .returning("*")
-      //   .execute();
-      // user = result.raw[0]
+      const result = await getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into(User)
+        .values({
+          username: options.username,
+          password: hashedPassword,
+          email: options.email,
+        })
+        .returning("*")
+        .execute();
+      user = result.raw[0];
     } catch (err) {
       // duplicate username error
       if (err.code === "23505") {
