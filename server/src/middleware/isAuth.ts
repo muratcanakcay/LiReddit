@@ -5,7 +5,7 @@ import { MiddlewareFn } from "type-graphql";
 export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
   if (!context.req.session.userId) {
     // if user is not logged in
-    throw new Error("Not authenticated!");
+    throw new Error("not authenticated");
   }
 
   // if user is logged in continue with resolver
