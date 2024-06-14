@@ -8,8 +8,7 @@ import { Button, Link } from "@chakra-ui/react";
 const Index = () => {
   const [{ data }] = usePostsQuery({
     variables: {
-      limit: 10,
-      cursor: "1718237805348",
+      limit: 20,
     },
   });
   return (
