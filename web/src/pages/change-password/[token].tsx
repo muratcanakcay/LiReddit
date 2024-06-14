@@ -64,6 +64,10 @@ export const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
   );
 };
 
+/* It's better to retrieve the token using 
+router.query.token instead of getInitialProps
+since pages without getInitialProps are 
+optimized as static pages by NextJs*/
 ChangePassword.getInitialProps = ({ query }) => {
   return {
     token: query.token as string, // take the token from the Query string section of URL and pass it to ResetPassword page as props
