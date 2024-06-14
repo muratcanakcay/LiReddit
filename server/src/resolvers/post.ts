@@ -49,16 +49,46 @@ export class PostResolver {
     @Arg("cursor", () => String, { nullable: true }) cursor: string | null
   ): Promise<PaginatedPosts> {
     //await sleep(3000); // simulate delay to test csr vs ssr load times
+
     const realLimit = Math.min(50, limit);
     const realLimitPlusOne = Math.min(50, limit) + 1;
+
+    /* We can also use SQL query to get the data from DB:"
+
+    const replacements: any[] = [realLimitPlusOne];
+
+    if (cursor) {
+      replacements.push(new Date(parseInt(cursor)));
+    }
+
+    const posts = await getConnection().query(
+      `
+      select p.*,
+      json_build_object(
+      'id', u.id,
+      'username', u.username,
+      'email', u.email
+      ) creator
+       from post p
+       inner join public.user u on u.id = p."creatorId"
+       ${cursor ? `where p."createdAt" < $2` : ""}
+       order by p."createdAt" DESC
+       limit $1
+       `,
+      replacements
+    );
+
+    */
+
     const qb = getConnection()
       .getRepository(Post)
       .createQueryBuilder("p")
-      .orderBy('"createdAt"', "DESC") // mind the double quotes '" ... "'
+      .innerJoinAndSelect("p.creator", "u", "u.id = p.creatorId")
+      .orderBy("p.createdAt", "DESC") // mind the double quotes '" ... "'
       .take(realLimitPlusOne);
 
     if (cursor) {
-      qb.where('"createdAt" < :cursor', { cursor: new Date(parseInt(cursor)) });
+      qb.where("p.createdAt < :cursor", { cursor: new Date(parseInt(cursor)) });
     }
 
     const posts = await qb.getMany();
