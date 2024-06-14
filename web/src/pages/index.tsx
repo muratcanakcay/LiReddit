@@ -6,7 +6,12 @@ import NextLink from "next/link";
 import { Button, Link } from "@chakra-ui/react";
 
 const Index = () => {
-  const [{ data }] = usePostsQuery();
+  const [{ data }] = usePostsQuery({
+    variables: {
+      limit: 10,
+      cursor: "1718237805348",
+    },
+  });
   return (
     <>
       <Layout>
