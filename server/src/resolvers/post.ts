@@ -12,6 +12,7 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { isAuth } from "../middleware/isAuth";
+import { getConnection } from "typeorm";
 // import { sleep } from "../utils/sleep";
 
 @InputType()
@@ -25,9 +26,23 @@ class PostInput {
 @Resolver()
 export class PostResolver {
   @Query(() => [Post])
-  posts(): Promise<Post[]> {
+  async posts(
+    @Arg("limit") limit: number,
+    @Arg("cursor", () => String, { nullable: true }) cursor: string | null
+  ): Promise<Post[]> {
     //await sleep(3000); // simulate delay to test csr vs ssr load times
-    return Post.find();
+    const realLimit = Math.min(50, limit);
+    const qb = getConnection()
+      .getRepository(Post)
+      .createQueryBuilder("p")
+      .orderBy('"createdAt"', "DESC") // mind the double quotes '" ... "'
+      .take(realLimit);
+
+    if (cursor) {
+      qb.where('"createdAt" < :cursor', { cursor: new Date(parseInt(cursor)) });
+    }
+
+    return qb.getMany();
   }
 
   @Query(() => Post, { nullable: true })
