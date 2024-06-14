@@ -28,7 +28,7 @@ const Index = () => {
               //<div key={p.id}>{p.title}</div>
               <Box key={p.id} p={5} shadow="md" borderWidth="1px">
                 <Heading fontSize="xl">{p.title}</Heading>
-                <Text>{p.text.slice(0, 150)}...</Text>
+                <Text>{p.textSnippet}...</Text>
               </Box>
             ))}
           </Stack>
