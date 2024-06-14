@@ -1,4 +1,5 @@
 import { Resolver, cacheExchange } from "@urql/exchange-graphcache";
+import router from "next/router";
 import {
   Exchange,
   dedupExchange,
@@ -7,7 +8,6 @@ import {
 } from "urql";
 import { pipe, tap } from "wonka";
 import {
-  CreatePostMutation,
   LoginMutation,
   LogoutMutation,
   MeDocument,
@@ -15,9 +15,6 @@ import {
   RegisterMutation,
 } from "../generated/graphql";
 import { betterUpdateQuery } from "./betterUpdateQuery";
-import router from "next/router";
-import createPost from "../pages/create-post";
-import { stringify } from "querystring";
 
 //github.com/FormidableLabs/urql/issues/225 - global error handling
 const errorExchange: Exchange =
@@ -40,10 +37,8 @@ const errorExchange: Exchange =
 const cursorPagination = (): Resolver => {
   return (_parent, fieldArgs, cache, info) => {
     const { parentKey: entityKey, fieldName } = info;
-    //console.log("entityKey:", entityKey, "- fieldName:", fieldName);
 
     const allFields = cache.inspectFields(entityKey);
-    //console.log("allFields:", allFields);
 
     // filter allFields to get only the field infos related to the field we want to work on
     const fieldInfos = allFields.filter((info) => info.fieldName === fieldName);
@@ -52,25 +47,36 @@ const cursorPagination = (): Resolver => {
     if (size === 0) {
       return undefined;
     }
-    //console.log("fieldArgs:", fieldArgs);
 
     // create a new fieldKey to check the cache and update cache if needed
     const fieldKey = `${fieldName}(${stringifyVariables(fieldArgs)})`;
-    console.log("FieldKey we created:", fieldKey);
-    const isItInTheCache = cache.resolveFieldByKey(entityKey, fieldKey);
-    console.log("isItInTheCache: ", isItInTheCache);
+
+    const isItInTheCache = cache.resolve(
+      cache.resolveFieldByKey(entityKey, fieldKey) as string,
+      "posts"
+    );
+
     info.partial = !isItInTheCache; // reload if new results are not in the cache
 
     // cache.readQuery() --> This will call the resolver again and enter an infinite loop
     // so we use this:
     const results: string[] = [];
+    let hasMore = true;
     fieldInfos.forEach((fi) => {
-      const data = cache.resolveFieldByKey(entityKey, fi.fieldKey) as string[];
-      //console.log("data: ", data);
+      const key = cache.resolveFieldByKey(entityKey, fi.fieldKey) as string;
+      const data = cache.resolve(key, "posts") as string[];
+      if (!(cache.resolve(key, "hasMore") as boolean)) {
+        hasMore = false;
+      }
+
       results.push(...data);
     });
 
-    return results;
+    return {
+      __typename: "PaginatedPosts", // NOT PUTTING THIS WAS CAUSING AN ERROR graphql.tsx:374 Invalid resolver value: The field at `Query.posts({"limit":10})` is a scalar (number, boolean, etc), but the GraphQL query expects a selection set for this field.
+      hasMore,
+      posts: results,
+    };
   };
 };
 
@@ -82,6 +88,9 @@ export const createUrqlClient = (ssrExchange: any) => ({
   exchanges: [
     dedupExchange,
     cacheExchange({
+      keys: {
+        PaginatedPosts: () => null,
+      },
       resolvers: {
         Query: {
           // this will run whenever the posts query is run

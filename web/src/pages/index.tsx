@@ -19,16 +19,10 @@ const Index = () => {
     limit: 10,
     cursor: null as string | null,
   });
+
   const [{ data, fetching }] = usePostsQuery({
     variables: postsQueryVariables,
   });
-
-  console.log(
-    "limit:",
-    postsQueryVariables.limit,
-    "cursor:",
-    postsQueryVariables.cursor
-  );
 
   if (!data && !fetching) {
     return <div>No posts loaded for some reason...</div>;
@@ -50,8 +44,7 @@ const Index = () => {
           <div>Loading...</div>
         ) : (
           <Stack spacing={8}>
-            {data.posts.map((p) => (
-              //<div key={p.id}>{p.title}</div>
+            {data!.posts.posts.map((p) => (
               <Box key={p.id} p={5} shadow="md" borderWidth="1px">
                 <Heading fontSize="xl">{p.title}</Heading>
                 <Text>{p.textSnippet}...</Text>
@@ -59,13 +52,14 @@ const Index = () => {
             ))}
           </Stack>
         )}
-        {data ? (
+        {data && data.posts.hasMore ? (
           <Flex>
             <Button
               onClick={() =>
                 setPostsQueryVariables({
                   limit: postsQueryVariables.limit,
-                  cursor: data.posts[data.posts.length - 1].createdAt,
+                  cursor:
+                    data.posts.posts[data.posts.posts.length - 1].createdAt,
                 })
               }
               isLoading={fetching}
