@@ -16,6 +16,7 @@ import {
 } from "type-graphql";
 import { isAuth } from "../middleware/isAuth";
 import { getConnection } from "typeorm";
+import { Updoot } from "../entities/Updoot";
 // import { sleep } from "../utils/sleep";
 
 @InputType()
@@ -41,6 +42,40 @@ export class PostResolver {
     @Root() root: Post // get called for Post objects
   ) {
     return root.text.slice(0, 150);
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async vote(
+    @Arg("value", () => Int) value: number,
+    @Arg("postId", () => Int) postId: number,
+    @Ctx() { req }: MyContext
+  ) {
+    const isUpdoot = value !== -1;
+    const realValue = isUpdoot ? 1 : -1;
+    const userId = req.session.userId;
+    // await Updoot.insert({
+    //   userId,
+    //   postId,
+    //   value: realValue,
+    // });
+
+    await getConnection().query(
+      `
+      START TRANSACTION;
+      
+      insert into updoot("userId", "postId", "value")
+      values (${userId}, ${postId}, ${realValue});
+      
+      update post
+      set points = points + ${realValue}
+      where id = ${postId};
+      
+      COMMIT;
+      `
+    );
+
+    return true;
   }
 
   @Query(() => PaginatedPosts)
