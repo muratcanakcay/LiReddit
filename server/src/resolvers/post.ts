@@ -41,7 +41,7 @@ export class PostResolver {
   textSnippet(
     @Root() root: Post // get called for Post objects
   ) {
-    return root.text.slice(0, 150);
+    return root.text.slice(0, 150) + (root.text.length > 150 ? "..." : "");
   }
 
   @Mutation(() => Boolean)

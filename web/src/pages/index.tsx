@@ -13,6 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { UpdootSection } from "../components/UpdootSection";
 
 const Index = () => {
   const [postsQueryVariables, setPostsQueryVariables] = useState({
@@ -45,18 +46,25 @@ const Index = () => {
         ) : (
           <Stack spacing={8}>
             {data!.posts.posts.map((p) => (
-              <Box key={p.id} p={5} shadow="md" borderWidth="1px">
-                <Flex>
-                  <Heading fontSize="xl">{p.title}</Heading>
-                  <Flex ml="auto">
-                    <Text>posted by:</Text>
-                    <Text ml={2} fontWeight="bold">
-                      {p.creator.username}
-                    </Text>
+              <Flex key={p.id} p={5} shadow="md" borderWidth="1px">
+                <UpdootSection post={p} />
+
+                <Box width="100%">
+                  <Flex justifyContent="space-between">
+                    <Heading marginEnd="auto" fontSize="xl">
+                      {p.title}
+                    </Heading>
+
+                    <Flex>
+                      <Text>posted by:</Text>
+                      <Text ml={2} fontWeight="bold">
+                        {p.creator.username}
+                      </Text>
+                    </Flex>
                   </Flex>
-                </Flex>
-                <Text>{p.textSnippet}...</Text>
-              </Box>
+                  <Text mt={4}>{p.textSnippet}</Text>
+                </Box>
+              </Flex>
             ))}
           </Stack>
         )}
