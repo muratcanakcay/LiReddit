@@ -18,7 +18,7 @@
     "graphql": "15.3.0",
     "graphql-tag": "^2.11.0",
     "isomorphic-unfetch": "3.0.0",
-    "next": "latest",
+    "next": "14.2.3",
     "next-urql": "1.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
