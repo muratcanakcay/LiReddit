@@ -8,10 +8,12 @@ import {
 } from "urql";
 import { pipe, tap } from "wonka";
 import {
+  CreatePostMutation,
   LoginMutation,
   LogoutMutation,
   MeDocument,
   MeQuery,
+  Post,
   RegisterMutation,
 } from "../generated/graphql";
 import { betterUpdateQuery } from "./betterUpdateQuery";
@@ -101,6 +103,15 @@ export const createUrqlClient = (ssrExchange: any) => ({
       // this will update the cache everytime the defined mutations are run
       updates: {
         Mutation: {
+          createPost: (result, args, cache, info) => {
+            var previousLimit = cache
+              .inspectFields("Query")
+              .find((f) => f.fieldName === "posts")?.arguments?.limit as number;
+            cache.invalidate("Query", "posts", {
+              limit: previousLimit,
+            });
+          },
+
           logout: (result, args, cache, info) => {
             betterUpdateQuery<LogoutMutation, MeQuery>(
               cache,
