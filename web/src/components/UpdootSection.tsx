@@ -16,6 +16,10 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
     <Flex direction="column" justifyContent="center" alignItems="center" mr={4}>
       <IconButton
         onClick={async () => {
+          console.log("voteStat: ", post.voteStatus);
+          if (post.voteStatus === 1) {
+            return;
+          }
           setLoadingState("updoot-loading");
           await vote({
             postId: post.id,
@@ -25,13 +29,17 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
         }}
         isLoading={loadingState === "updoot-loading"}
         boxSize={6}
-        backgroundColor={post.points === 1 ? "teal.100" : ""}
+        backgroundColor={post.voteStatus === 1 ? "teal.100" : ""}
         icon={<ChevronUpIcon />}
         aria-label={"Upvote post"}
       />
       {post.points}
       <IconButton
         onClick={async () => {
+          console.log("voteStat: ", post.voteStatus);
+          if (post.voteStatus === -1) {
+            return;
+          }
           setLoadingState("downdoot-loading");
           await vote({
             postId: post.id,
@@ -41,7 +49,7 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
         }}
         isLoading={loadingState === "downdoot-loading"}
         boxSize={6}
-        backgroundColor={post.points === -1 ? "teal.100" : ""}
+        backgroundColor={post.voteStatus === -1 ? "red.100" : ""}
         icon={<ChevronDownIcon />}
         aria-label={"Downvote post"}
       />

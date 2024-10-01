@@ -8,15 +8,15 @@ import {
 } from "urql";
 import { pipe, tap } from "wonka";
 import {
-  CreatePostMutation,
   LoginMutation,
   LogoutMutation,
   MeDocument,
   MeQuery,
-  Post,
   RegisterMutation,
+  VoteMutationVariables,
 } from "../generated/graphql";
 import { betterUpdateQuery } from "./betterUpdateQuery";
+import gql from "graphql-tag";
 
 //github.com/FormidableLabs/urql/issues/225 - global error handling
 const errorExchange: Exchange =
@@ -103,6 +103,42 @@ export const createUrqlClient = (ssrExchange: any) => ({
       // this will update the cache everytime the defined mutations are run
       updates: {
         Mutation: {
+          vote: (result, args, cache, info) => {
+            const { postId, value } = args as VoteMutationVariables;
+
+            const data = cache.readFragment(
+              gql`
+                fragment _ on Post {
+                  id
+                  points
+                  voteStatus
+                }
+              `,
+              { id: postId } as any
+            );
+
+            console.log("data: ", data);
+
+            if (data) {
+              if (data.voteStatus === value) {
+                return;
+              }
+
+              const newPoints =
+                (data.points as number) + (!data.voteStatus ? 1 : 2) * value;
+
+              cache.writeFragment(
+                gql`
+                  fragment __ on Post {
+                    points
+                    voteStatus
+                  }
+                `,
+                { id: postId, points: newPoints, voteStatus: value } as any
+              );
+            }
+          },
+
           createPost: (result, args, cache, info) => {
             var previousLimit = cache
               .inspectFields("Query")
