@@ -16,7 +16,6 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
     <Flex direction="column" justifyContent="center" alignItems="center" mr={4}>
       <IconButton
         onClick={async () => {
-          console.log("voteStat: ", post.voteStatus);
           if (post.voteStatus === 1) {
             return;
           }
@@ -36,7 +35,6 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
       {post.points}
       <IconButton
         onClick={async () => {
-          console.log("voteStat: ", post.voteStatus);
           if (post.voteStatus === -1) {
             return;
           }
