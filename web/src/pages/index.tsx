@@ -32,15 +32,6 @@ const Index = () => {
   return (
     <>
       <Layout>
-        <Flex mb={4} align="center">
-          <Heading>LiReddit</Heading>
-          <Button ml="auto" type="button" color="teal">
-            <Link as={NextLink} href="/create-post">
-              Create Post
-            </Link>
-          </Button>
-        </Flex>
-        <br />
         {!data ? (
           <div>Loading...</div>
         ) : (
