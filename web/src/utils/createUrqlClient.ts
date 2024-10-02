@@ -8,6 +8,7 @@ import {
 } from "urql";
 import { pipe, tap } from "wonka";
 import {
+  DeletePostMutationVariables,
   LoginMutation,
   LogoutMutation,
   MeDocument,
@@ -113,6 +114,10 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
         // this will update the cache everytime the defined mutations are run
         updates: {
           Mutation: {
+            deletePost: (result, args, cache, info) => {
+              const { id } = args as DeletePostMutationVariables;
+              cache.invalidate({ __typename: "Post", id });
+            },
             vote: (result, args, cache, info) => {
               const { postId, value } = args as VoteMutationVariables;
 
