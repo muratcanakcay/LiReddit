@@ -1,6 +1,6 @@
 import { withUrqlClient } from "next-urql";
 import { Layout } from "../components/Layout";
-import { usePostsQuery } from "../generated/graphql";
+import { useDeletePostMutation, usePostsQuery } from "../generated/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import NextLink from "next/link";
 import {
@@ -27,6 +27,8 @@ const Index = () => {
     variables: postsQueryVariables,
   });
 
+  const [, deletePost] = useDeletePostMutation();
+
   if (!data && !fetching) {
     return <div>No posts loaded for some reason...</div>;
   }
@@ -38,36 +40,39 @@ const Index = () => {
           <div>Loading...</div>
         ) : (
           <Stack spacing={8}>
-            {data!.posts.posts.map((p) => (
-              <Flex key={p.id} p={5} shadow="md" borderWidth="1px">
-                <UpdootSection post={p} />
+            {data!.posts.posts.map((p) =>
+              !p ? null : (
+                <Flex key={p.id} p={5} shadow="md" borderWidth="1px">
+                  <UpdootSection post={p} />
 
-                <Box width="100%">
-                  <Flex justifyContent="space-between">
-                    <Link as={NextLink} href={`/post/${p.id}`}>
-                      <Heading marginEnd="auto" fontSize="xl">
-                        {p.title}
-                      </Heading>
-                    </Link>
-
-                    <Flex>
-                      <Text>posted by:</Text>
-                      <Text ml={2} fontWeight="bold">
-                        {p.creator.username}
-                      </Text>
+                  <Box width="100%">
+                    <Flex justifyContent="space-between">
+                      <Link as={NextLink} href={`/post/${p.id}`}>
+                        <Heading marginEnd="auto" fontSize="xl">
+                          {p.title}
+                        </Heading>
+                      </Link>
+                      <Flex>
+                        <Text>posted by:</Text>
+                        <Text ml={2} fontWeight="bold">
+                          {p.creator.username}
+                        </Text>
+                      </Flex>
                     </Flex>
-                  </Flex>
-                  <Flex mt={4} flex={1} align="center">
-                    <Text>{p.textSnippet}</Text>
-                    <IconButton
-                      ml="auto"
-                      icon={<DeleteIcon />}
-                      aria-label="Delete Post"
-                    />
-                  </Flex>
-                </Box>
-              </Flex>
-            ))}
+
+                    <Flex mt={4} flex={1} align="center">
+                      <Text>{p.textSnippet}</Text>
+                      <IconButton
+                        onClick={() => deletePost({ id: p.id })}
+                        ml="auto"
+                        icon={<DeleteIcon />}
+                        aria-label="Delete Post"
+                      />
+                    </Flex>
+                  </Box>
+                </Flex>
+              )
+            )}
           </Stack>
         )}
         {data && data.posts.hasMore ? (
