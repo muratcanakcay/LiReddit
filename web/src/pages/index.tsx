@@ -8,12 +8,14 @@ import {
   Button,
   Flex,
   Heading,
+  IconButton,
   Link,
   Stack,
   Text,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { UpdootSection } from "../components/UpdootSection";
+import { DeleteIcon } from "@chakra-ui/icons";
 
 const Index = () => {
   const [postsQueryVariables, setPostsQueryVariables] = useState({
@@ -55,7 +57,14 @@ const Index = () => {
                       </Text>
                     </Flex>
                   </Flex>
-                  <Text mt={4}>{p.textSnippet}</Text>
+                  <Flex mt={4} flex={1} align="center">
+                    <Text>{p.textSnippet}</Text>
+                    <IconButton
+                      ml="auto"
+                      icon={<DeleteIcon />}
+                      aria-label="Delete Post"
+                    />
+                  </Flex>
                 </Box>
               </Flex>
             ))}
