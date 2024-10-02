@@ -166,7 +166,7 @@ export class PostResolver {
   post(
     @Arg("id", () => Int) id: number // 'id' is just a name for using in GraphQL schema, id is the actual field in database
   ): Promise<Post | undefined> {
-    return Post.findOne(id);
+    return Post.findOne(id, { relations: ["creator"] });
   }
 
   @UseMiddleware(isAuth)
