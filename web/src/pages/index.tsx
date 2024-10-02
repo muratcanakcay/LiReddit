@@ -51,9 +51,11 @@ const Index = () => {
 
                 <Box width="100%">
                   <Flex justifyContent="space-between">
-                    <Heading marginEnd="auto" fontSize="xl">
-                      {p.title}
-                    </Heading>
+                    <Link as={NextLink} href={`/post/${p.id}`}>
+                      <Heading marginEnd="auto" fontSize="xl">
+                        {p.title}
+                      </Heading>
+                    </Link>
 
                     <Flex>
                       <Text>posted by:</Text>
