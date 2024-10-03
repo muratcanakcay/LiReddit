@@ -264,7 +264,7 @@ export type UpdatePostMutation = (
   { __typename?: 'Mutation' }
   & { updatePost?: Maybe<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'text'>
+    & Pick<Post, 'id' | 'title' | 'text' | 'textSnippet'>
   )> }
 );
 
@@ -444,10 +444,9 @@ export const UpdatePostDocument = gql`
     mutation UpdatePost($id: Int!, $title: String!, $text: String!) {
   updatePost(id: $id, title: $title, text: $text) {
     id
-    createdAt
-    updatedAt
     title
     text
+    textSnippet
   }
 }
     `;
