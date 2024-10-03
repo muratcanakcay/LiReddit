@@ -187,22 +187,26 @@ export class PostResolver {
     }).save();
   }
 
+  @UseMiddleware(isAuth)
   @Mutation(() => Post, { nullable: true })
   async updatePost(
-    @Arg("id") id: number, // here we ommitted type declaration in @Arg - type inference works for Int and String
-    @Arg("title", () => String, { nullable: true }) title: string // here we explicitly set type since we want to make it nullable
+    @Arg("id", () => Int) id: number,
+    @Arg("title") title: string,
+    @Arg("text") text: string,
+    @Ctx() { req }: MyContext
   ): Promise<Post | null> {
-    const post = await Post.findOne(id);
+    const result = await getConnection()
+      .createQueryBuilder()
+      .update(Post)
+      .set({ title, text })
+      .where('id = :id and "creatorId" = :creatorId', {
+        id,
+        creatorId: req.session.userId,
+      })
+      .returning("*")
+      .execute();
 
-    if (!post) {
-      return null;
-    }
-
-    if (typeof title !== "undefined") {
-      await Post.update({ id }, { title });
-    }
-
-    return post;
+    return result.raw[0];
   }
 
   @UseMiddleware(isAuth)
