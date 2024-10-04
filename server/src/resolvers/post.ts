@@ -17,6 +17,7 @@ import {
 import { isAuth } from "../middleware/isAuth";
 import { getConnection } from "typeorm";
 import { Updoot } from "../entities/Updoot";
+import { User } from "../entities/User";
 // import { sleep } from "../utils/sleep";
 
 @InputType()
@@ -39,9 +40,16 @@ class PaginatedPosts {
 export class PostResolver {
   @FieldResolver(() => String)
   textSnippet(
-    @Root() root: Post // get called for Post objects
+    @Root() post: Post // get called for Post objects
   ) {
-    return root.text.slice(0, 150) + (root.text.length > 150 ? "..." : "");
+    return post.text.slice(0, 150) + (post.text.length > 150 ? "..." : "");
+  }
+
+  @FieldResolver(() => User)
+  creator(
+    @Root() post: Post // get called for Post objects
+  ) {
+    return User.findOne(post.creatorId);
   }
 
   @Mutation(() => Boolean)
@@ -81,7 +89,7 @@ export class PostResolver {
           [2 * realValue, postId] // 2*realValue so that 1 changes to -1 and vice versa
         );
       });
-    } // use has not voted before
+    } // user has not voted before
     else if (!updoot) {
       await getConnection().transaction(async (tm) => {
         // update the updoot table
@@ -120,7 +128,6 @@ export class PostResolver {
     const realLimitPlusOne = Math.min(50, limit) + 1;
 
     // Use SQL query to get the data from DB:
-    console.log("userId: ", req.session.userId);
 
     const replacements: any[] = [realLimitPlusOne];
 
@@ -136,23 +143,17 @@ export class PostResolver {
 
     const posts = await getConnection().query(
       `
-    select p.*,
-    json_build_object(
-      'id', u.id,
-      'username', u.username,
-      'email', u.email
-      ) creator,
-    ${
-      req.session.userId
-        ? '(select value from updoot where "userId" = $2 and "postId" = p.id) "voteStatus"'
-        : 'null as "voteStatus"'
-    }
-       from post p
-       inner join public.user u on u.id = p."creatorId"
-       ${cursor ? `where p."createdAt" < $${cursorIdx}` : ""}
-       order by p."createdAt" DESC
-       limit $1
-       `,
+      select p.*,
+      ${
+        req.session.userId
+          ? '(select value from updoot where "userId" = $2 and "postId" = p.id) "voteStatus"'
+          : 'null as "voteStatus"'
+      }
+      from post p
+      ${cursor ? `where p."createdAt" < $${cursorIdx}` : ""}
+      order by p."createdAt" DESC
+      limit $1
+      `,
       replacements
     );
 
@@ -166,7 +167,7 @@ export class PostResolver {
   post(
     @Arg("id", () => Int) id: number // 'id' is just a name for using in GraphQL schema, id is the actual field in database
   ): Promise<Post | undefined> {
-    return Post.findOne(id, { relations: ["creator"] });
+    return Post.findOne(id);
   }
 
   @UseMiddleware(isAuth)
