@@ -1,4 +1,4 @@
-import { Resolver, cacheExchange } from "@urql/exchange-graphcache";
+import { Cache, Resolver, cacheExchange } from "@urql/exchange-graphcache";
 import router from "next/router";
 import {
   Exchange,
@@ -84,6 +84,15 @@ const cursorPagination = (): Resolver => {
   };
 };
 
+function invalidateAllPosts(cache: Cache) {
+  var previousLimit = cache
+    .inspectFields("Query")
+    .find((f) => f.fieldName === "posts")?.arguments?.limit as number;
+  cache.invalidate("Query", "posts", {
+    limit: previousLimit,
+  });
+}
+
 // this code runs both on the browser and the server
 export const createUrqlClient = (ssrExchange: any, ctx: any) => {
   let cookie = "";
@@ -153,13 +162,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
             },
 
             createPost: (result, args, cache, info) => {
-              var previousLimit = cache
-                .inspectFields("Query")
-                .find((f) => f.fieldName === "posts")?.arguments
-                ?.limit as number;
-              cache.invalidate("Query", "posts", {
-                limit: previousLimit,
-              });
+              invalidateAllPosts(cache);
             },
 
             logout: (result, args, cache, info) => {
@@ -186,6 +189,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
                   }
                 }
               );
+              invalidateAllPosts(cache);
             },
             register: (result, args, cache, info) => {
               betterUpdateQuery<RegisterMutation, MeQuery>(
