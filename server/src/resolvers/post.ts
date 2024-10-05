@@ -46,10 +46,11 @@ export class PostResolver {
   }
 
   @FieldResolver(() => User)
-  creator(
-    @Root() post: Post // get called for Post objects
+  async creator(
+    @Root() post: Post, // get called for Post objects
+    @Ctx() { userLoader }: MyContext
   ) {
-    return User.findOne(post.creatorId);
+    return await userLoader.load(post.creatorId);
   }
 
   @Mutation(() => Boolean)

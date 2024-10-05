@@ -1578,6 +1578,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dataloader@npm:2.0.0":
+  version: 2.0.0
+  resolution: "dataloader@npm:2.0.0"
+  checksum: 10c0/af2c080fc29dd8286d87df63bbe69e09b1ddf4e88b2959f603e82969d3a58d04ba8a98286f9e5767a22a859009d024f002757a9f82adbc931d8a58e63f8dc8ce
+  languageName: node
+  linkType: hard
+
 "debug@npm:2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -2801,6 +2808,7 @@ __metadata:
     argon2: "npm:^0.40.3"
     connect-redis: "npm:5.0.0"
     cors: "npm:2.8.5"
+    dataloader: "npm:2.0.0"
     express: "npm:^4.19.2"
     express-session: "npm:1.17.1"
     graphql: "npm:15.3.0"
