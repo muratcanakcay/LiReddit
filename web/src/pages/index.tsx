@@ -55,7 +55,7 @@ const Index = () => {
                     </Flex>
 
                     <Flex mt={4} flex={1} align="center">
-                      <Text>{p.textSnippet}</Text>
+                      <Text mr="auto">{p.textSnippet}</Text>
                       <EditDeletePostButtons
                         id={p.id}
                         creatorId={p.creator.id}
